@@ -23,28 +23,18 @@ def calculate_r0(beta, gamma, s0 = 1.0):
         raise ValueError("gamma must me positive.")
     return (beta /gamma) * s0
 
-def run_part1_simulation():
-    print("Part 1: Solving SEIR Model (ODE)")
-    
-    # Input validation and customisation (Feedback 6 & 7)
-    try:
-        # Default values: beta=1.0, sigma=1.0, gamma=0.1
-        beta_input = input("Enter infection rate (beta) [default 1.0]: ") or "1.0"
-        sigma_input = input("Enter incubation rate (sigma) [default 1.0]: ") or "1.0"
-        gamma_input = input("Enter recovery rate (gamma) [default 0.1]: ") or "0.1"
-        
-        beta = float(beta_input)
-        sigma = float(sigma_input)
-        gamma = float(gamma_input)
-        
-        # Check for invalid negative values
-        if beta < 0 or sigma < 0 or gamma < 0:
-            raise ValueError("Parameters cannot be negative.")
-            
-    except ValueError as e:
-        print(f"Runtime Error: {e}")
-        sys.exit(1)
+def solve_seir_case(beta, sigma, gamma, initial_state, time_points):
+    results = odeint(seir_equations, initial_state, time_points, args=(beta, sigma, gamma))
 
+    totals = np.sum(results, axis=1)
+    if not np.allclose(totals, 1.0, atol=1e-6):
+        raise RuntimeError("Population is not conserved in the ODE solution.")
+
+    return results
+
+def run_part1_experiments():
+    print("Part 1: Exploring different R0 regimes")
+    
     # Initial conditions (Fraction of population)
     # Start with 99% susceptible and 1% exposed
     s0, e0, i0, r0 = 0.99, 0.01, 0.0, 0.0
@@ -54,23 +44,35 @@ def run_part1_simulation():
     # Using 1000 points to ensure smooth curves and consistent types (Feedback 11)
     time_points = np.linspace(0.0, 100.0, 1000)
 
-    # Solve the system of ODEs
-    results = odeint(seir_equations, initial_state, time_points, args=(beta, sigma, gamma))
-    
-    # Plotting the results
-    plt.figure(figsize=(10, 6))
-    plt.plot(time_points, results[:, 0], 'b-', label='Susceptible')
-    plt.plot(time_points, results[:, 1], 'y-', label='Exposed')
-    plt.plot(time_points, results[:, 2], 'g-', label='Infected')
-    plt.plot(time_points, results[:, 3], 'r-', label='Recovered')
-    
-    r0 = calculate_r0(beta, gamma, s0)
-    plt.title(f'SEIR Model Dynamics (R0 = {r0:.2f})')
-    plt.xlabel('Time (days)')
-    plt.ylabel('Fraction of Population')
-    plt.legend(loc='best')
+    cases = [
+        {"label": "Disease dies out", "beta": 0.05, "sigma": 1.0, "gamma": 0.1},
+        {"label": "Moderate outbreak", "beta": 0.2, "sigma": 1.0, "gamma": 0.1},
+        {"label": "Large outbreak", "beta": 1.0, "sigma": 1.0, "gamma": 0.1},
+    ]
+
+    plt.figure(figsize=(10,6))
+
+
+    for case in cases:
+        beta = case["beta"]
+        sigma = case["sigma"]
+        gamma = case["gamma"]
+        r0_value = calculate_r0(beta, gamma, s0)
+
+        results = solve_seir_case(beta, sigma, gamma, initial_state, time_points)
+
+        plt.plot(
+            time_points,
+            results[:, 2],
+            label=f'{case["label"]} (R0={r0_value:.2f})'
+        )
+
+    plt.title("Comparison of infected population for different R0 values")
+    plt.xlabel("Time (days)")
+    plt.ylabel("Infected Fraction")
+    plt.legend(loc="best")
     plt.grid(True)
     plt.show()
 
 if __name__ == "__main__":
-    run_part1_simulation()
+    run_part1_experiments()
