@@ -18,8 +18,13 @@ def seir_equations(y, t, beta, sigma, gamma):
     
     return [dsdt, dedt, didt, drdt]
 
+def calculate_r0(beta, gamma, s0 = 1.0):
+    if gamma <= 0:
+        raise ValueError("gamma must me positive.")
+    return (beta /gamma) * s0
+
 def run_part1_simulation():
-    print("--- Part 1: Solving SEIR Model (ODE) ---")
+    print("Part 1: Solving SEIR Model (ODE)")
     
     # Input validation and customisation (Feedback 6 & 7)
     try:
@@ -59,7 +64,8 @@ def run_part1_simulation():
     plt.plot(time_points, results[:, 2], 'g-', label='Infected')
     plt.plot(time_points, results[:, 3], 'r-', label='Recovered')
     
-    plt.title(f'SEIR Model Dynamics (R0 = {beta/gamma:.2f})')
+    r0 = calculate_r0(beta, gamma, s0)
+    plt.title(f'SEIR Model Dynamics (R0 = {r0:.2f})')
     plt.xlabel('Time (days)')
     plt.ylabel('Fraction of Population')
     plt.legend(loc='best')
