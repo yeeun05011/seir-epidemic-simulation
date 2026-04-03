@@ -19,10 +19,12 @@ class Agent:
 
     @property
     def state(self):
-        return self.__state 
+        return self.__state
 
     @state.setter
     def state(self, new_state):
+        if new_state not in [1, 2, 3, 4]:
+            raise ValueError("Invalid state.")
         self.__state = new_state
 
     def get_pos(self):
@@ -68,7 +70,7 @@ class SimulationGrid:
 
     def has_infected_neighbor(self, x, y):
         """
-        Check the 4 nearest neighbours for an infected agent.
+        Check whether at least one nearest neighbour is infected.
         """
         for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
             nx = (x + dx) % self.__size
@@ -76,7 +78,19 @@ class SimulationGrid:
             if self.__grid[nx, ny] == 3:
                 return True
         return False
-    
+
+    def count_infected_neighbors(self, x, y):
+        """
+        Count the number of infected nearest neighbours.
+        """
+        count = 0
+        for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nx = (x + dx) % self.__size
+            ny = (y + dy) % self.__size
+            if self.__grid[nx, ny] == 3:
+                count += 1
+        return count
+
     def get_empty_position(self):
         """
         Return a random empty lattice site.
