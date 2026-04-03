@@ -6,3 +6,7 @@ install:
 
 clean:
 	rm -rf __pycache__
+	rm -f *.pyc
+
+reinstall:
+	pip install --upgrade -r requirements.txt
