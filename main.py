@@ -2,6 +2,8 @@ import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 import sys
+import random
+from models import Agent, SimulationGrid
 
 def seir_equations(y, t, beta, sigma, gamma):
     """
@@ -76,3 +78,77 @@ def run_part1_experiments():
 
 if __name__ == "__main__":
     run_part1_experiments()
+
+def run_part2_monte_carlo():
+    print("--- Part 2: Monte Carlo SEIR Model ---")
+
+    # Parameters
+    L = 50
+    N = 250
+    steps = 1000
+    sigma = 0.1
+    gamma = 0.01
+
+    # Create agents
+    agents = []
+    for i in range(N):
+        x = random.randint(0, L - 1)
+        y = random.randint(0, L - 1)
+        state = 2 if i < int(N * 0.05) else 1
+        agents.append(Agent(x, y, state, L))
+
+    grid = SimulationGrid(L)
+
+    s_hist, e_hist, i_hist, r_hist = [], [], [], []
+
+    for _ in range(steps):
+        grid.update_occupancy(agents)
+
+        s_count, e_count, i_count, r_count = 0, 0, 0, 0
+
+        for agent in agents:
+            state = agent.state
+
+            if state == 1:
+                s_count += 1
+            elif state == 2:
+                e_count += 1
+            elif state == 3:
+                i_count += 1
+            elif state == 4:
+                r_count += 1
+
+            x, y = agent.get_pos()
+
+            if state == 1:
+                if grid.has_infected_neighbor(x, y):
+                    agent.state = 2
+            elif state == 2:
+                if random.random() < sigma:
+                    agent.state = 3
+            elif state == 3:
+                if random.random() < gamma:
+                    agent.state = 4
+
+            agent.move()
+
+        s_hist.append(s_count)
+        e_hist.append(e_count)
+        i_hist.append(i_count)
+        r_hist.append(r_count)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(s_hist, label="Susceptible")
+    plt.plot(e_hist, label="Exposed")
+    plt.plot(i_hist, label="Infected")
+    plt.plot(r_hist, label="Recovered")
+    plt.title("Monte Carlo SEIR Model")
+    plt.xlabel("Monte Carlo step")
+    plt.ylabel("Number of agents")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    if __name__ == "__main__":
+        run_part1_experiments()
+        run_part2_monte_carlo()
