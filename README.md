@@ -20,7 +20,6 @@ The goal is to compare how these two models behave under similar conditions.
 
 ## Project Structure
 
-.
 ├── main.py  
 ├── models.py  
 ├── Makefile  
@@ -92,3 +91,13 @@ due to random movement and interactions. This leads to differences in peak heigh
 - numpy
 - scipy
 - matplotlib
+
+## Simulation Results
+
+### Deterministic vs. Stochastic Comparison
+The following plot compares the ODE-based infected fraction with the Monte Carlo simulation results.
+![ODE vs MC Comparison](/Users/yen/Desktop/Figure_1_ODE vs MC.png)
+
+### Monte Carlo SEIR Dynamics
+This plot shows the population transition between Susceptible, Exposed, Infected, and Recovered states over time.
+![MC Results](/Users/yen/Desktop/Figure_2_p2.png)
