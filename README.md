@@ -100,4 +100,4 @@ The following plot compares the ODE-based infected fraction with the Monte Carlo
 
 ### Monte Carlo SEIR Dynamics
 This plot shows the population transition between Susceptible, Exposed, Infected, and Recovered states over time.
-![MC Results](/Users/yen/Desktop/Figure_2_p2.png)
+![ODE vs MC Comparison](Images/Figure_1_ODE_vs_MC.png)
