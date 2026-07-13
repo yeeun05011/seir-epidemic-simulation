@@ -96,8 +96,8 @@ due to random movement and interactions. This leads to differences in peak heigh
 
 ### Deterministic vs. Stochastic Comparison
 The following plot compares the ODE-based infected fraction with the Monte Carlo simulation results.
-![ODE vs MC Comparison](/Users/yen/Desktop/Figure_1_ODE vs MC.png)
+![ODE vs MC Comparison](Images/Figure_1_ODE_vs_MC.png)
 
 ### Monte Carlo SEIR Dynamics
 This plot shows the population transition between Susceptible, Exposed, Infected, and Recovered states over time.
-![ODE vs MC Comparison](Images/Figure_1_ODE_vs_MC.png)
+![MC Results](Images/Figure_2_p2.png)
